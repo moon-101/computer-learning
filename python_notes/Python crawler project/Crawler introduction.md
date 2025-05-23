@@ -25,15 +25,31 @@ BeautifulSoup 常见的操作包括查找标签、获取标签属性、提取文
 通常，你会先用爬虫库（如 requests）获取网页内容:
     
      ```python
-     url=""#确认爬取网站网址
-     response = requests.get(url)#发送网站请求，（已下载）
-     response.encoding="utf-8"#确认编码格式
-     soup=Beautitulsoup(response.text,"lxml")#解析内容
-     neirong= soup.find('',id='')#提取内容
-     with open('file name','moshi') as f:#存储内容
+      #确认需要爬取的网站网址
+      url=""
+
+     #发送网站请求，（已下载）
+     response = requests.get(url)
+
+     #确认编码格式
+     response.encoding="utf-8"
+
+     #解析内容
+     soup=Beautitulsoup(response.text,"lxml")
+
+     #提取内容
+     neirong= soup.find('',id='')
+
+     #存储内容
+     with open('file name','moshi') as f:
         f.write(soup,w)
      ```
 大体结构如上
+#由于各种原因会不断细化这四个环节。比如代码重构，模块化处理，模拟网络请求头，反爬虫机制、测试重写等等。但是，主体结构就是这四个。
+
+*遭遇到403情况，模拟网络请求头
+*乱码问题
+
 
 
 
