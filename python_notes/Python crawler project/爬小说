@@ -1,0 +1,60 @@
+import requests
+from bs4 import BeautifulSoup
+import lxml
+import chardet
+"""
+    https://www.22biqu.com/biqu13446/12278420.html
+    https://www.22biqu.com/biqu13446/14723358.html
+"""
+#为了连续爬取，我要对网址进行递增
+#输入爬取网址
+url="https://www.22biqu.com/biqu13446/12278419.html"
+#模拟网络请求头
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+}
+for i in range(12278419,14723359):
+    url=f"https://www.22biqu.com/biqu13446/{i}.html"
+
+    #测试异常
+    try:
+        #请求网站，获取原始内容
+        response=requests.get(url,headers=headers)
+        response.raise_for_status()
+        
+        #自动检察编码
+        det= chardet.detect(response.content)
+        actual_encoding=det['encoding']
+        print(f"编码：{actual_encoding}")
+
+        #使用正确编码解码
+        response.encoding = actual_encoding
+        html_content = response.text
+
+        #解析内容
+        soup=BeautifulSoup(html_content,'lxml')
+
+        #获取章节标题
+        title_tag = soup.find('h1')
+        chapter_title = title_tag.get_text().strip() if title_tag else f"第{i-12278418}章"
+        
+        #获取正文内容
+        content_div=soup.find("div",id='content')
+        if content_div:
+            #清理文本内容
+            text_content = content_div.get_text()
+            cleaned_content ='\n'.join(line.strip() for line in text_content.split('\n') if line.strip())
+
+            #保存为单独文件
+            filename=f"许仙志/{chapter_title}.txt"
+            with open(filename,encoding='utf-8') as f:
+                f.write(cleaned_content)
+            
+            print("小说保存完成")
+        else:
+            print("未完成")
+    except Exception as e:
+        print(f"处理{url}发生错误：{e}")
+
+
+

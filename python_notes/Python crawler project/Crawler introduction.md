@@ -42,7 +42,7 @@ BeautifulSoup 常见的操作包括查找标签、获取标签属性、提取文
 
      #存储内容
      with open('file name','moshi') as f:
-        f.write(soup,w)
+        f.write(soup,w),encoding=''utf-8'）
      ```
 大体结构如上
 #由于各种原因会不断细化这四个环节。比如代码重构，模块化处理，模拟网络请求头，反爬虫机制、测试重写等等。但是，主体结构就是这四个。
