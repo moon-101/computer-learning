@@ -7,7 +7,9 @@ import random
 import os
 import json
 from fake_useragent import UserAgent
-
+from tqdm import tqdm
+import string
+"""
 #初始化配置
 class Config:
     BASE_URL = "https://www.22biqu.com/bique1346"
@@ -63,29 +65,133 @@ class NovelSpider:
                     url,
                     headers=self.get_random_headers(),
                     timeout=10,
-                    
+                    proxies={'http':'socks5;//127.0.0.1:1080','https':'socks;//127.0.0.1:1080'}#示例处理
                 )
+                response.raise_for_status()
+
+                #自动检测编码
+                if 'charset' not in response.headers.get('content-type',''):
+                    encoding = chardet.detect(response.content)['encoding']
+                    response.encoding = encoding if encoding else 'utf-8'
+
+                return response
+                
+            except Exception as e:
+                print(f"请求失败：{e}")
+                time.sleep(random.uniform(2,5))
+        return None
+
+    def process_chapter(self,chapter_id):
+        if chapter_id in self.progress['completed']:
+            return True
+
+        url = f"{Config.BASE_URL}/{chapter_id}.html"
+        print(f"正在处理：{url}")
+
+        response = self.get_page(url)
+        if not response:
+            self.progress['failed'].append(chapter_id)
+            return False
+        soup = BeautifulSoup(response.text,'lxml')
+
+        #获取章节标题
+        title = soup.find('h1')
+        chapter_title = title.get_text().strip() if title else f"第{chapter_id - Config.START_ID+1}章"
 
 
+        #获取正文
+        content =soup.find("div",id='content')
+        if not content:
+            self.progress['failed'].append(chapter_id)
+                return False
+        
+        #清楚内容
+        text = '\n'.join(line.strip()
+                        for line in content.get.text().split('\n')
+                        if line.strip())
+                    
+        #保存章节
+        filename = f"{chapter_id}_{chapter_title}.txt".replace('/','_')
+        with open(os.path.join(Config.OUTPUT_DIR,filename)),'w',encoding='utf-8') as f
+        f.write(text)
 
+        #更新进度
+        self.progress['completed'].append(chapter_id)
+        self.progress['last_id']=chapter_id
+        self.save_progress()
+
+        return True
+    
+    def run(self):
+        try:
+            for chapter_id in range(self.progtress['last_id']+1,Config.END_ID + 1):
+                self.process_chapter(chapter_id)
+                delay = random.uniform(Config.MIN_DELAY,Config.MAX_DELAY)
+                time.sleep(delay)
+        
+        except KeyboardInterrupt:
+            print("\中断，正在保存进度")
+        finally:
+            self.save_progress()
+            print(f"完成，合格：{len(self.progress['completed'])},失败：{len(self.progress['failed'])}")
+
+        if __name__ =='__mian__':
+            spider = NovelSpider()
+            spider.run()
+            
+
+"""
 """
     https://www.22biqu.com/biqu13446/12278420.html
     https://www.22biqu.com/biqu13446/14723358.html
 """
 #为了连续爬取，我要对网址进行递增
-#输入爬取网址
+
+"""#输入爬取网址
 url="https://www.22biqu.com/biqu13446/12278419.html"
-#模拟网络请求头
+
+"""
+# 初始化随机用户代理生成器
 headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    'User-Agent': UserAgent().random,  # 每次请求生成随机UA
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+    'Accept-Language': 'zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3',
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Connection': 'keep-alive',
+    'Referer': 'https://www.22biqu.com/',
+    'DNT': '1'  # 禁止追踪
 }
-for i in range(12278419,14723359):
-    url=f"https://www.22biqu.com/biqu13446/{i}.html"
+
+#基准目录
+base_directory = r'D:\games\computer-learning\爬取的小说'
+if not os.path.exists(base_directory):
+    os.makedirs(base_directory)
+
+
+#目标目录
+target_directory=os.path.join(base_directory,'许仙志')
+if not os.path.exists(target_directory):
+    os.makedirs(target_directory)
+    print(f"{target_directory}已创建")
+else:
+    print("已存在")
+min_interval=1
+max_interval=5
+
+for i in tqdm(range(12278419, 12278429), 
+             desc="正在爬取小说", 
+             unit="章",
+             ncols=100,
+             dynamic_ncols=True):
 
     #测试异常
     try:
+        url=f"https://www.22biqu.com/biqu13446/{i}.html"
+        url2=f"https://www.22biqu.com/biqu13446/{i}_2.html"
         #请求网站，获取原始内容
         response=requests.get(url,headers=headers)
+        
+
         response.raise_for_status()
         
         #自动检察编码
@@ -100,27 +206,73 @@ for i in range(12278419,14723359):
         #解析内容
         soup=BeautifulSoup(html_content,'lxml')
 
-        #获取章节标题
-        title_tag = soup.find('h1')
-        chapter_title = title_tag.get_text().strip() if title_tag else f"第{i-12278418}章"
+
         
+        #确定好随机访问时间间隔
+        interval= random.uniform(min_interval,max_interval)
+
+        #获取章节标题
+        title_tag = soup.find("h1",class_='title')
+        raw_title = title_tag.get_text().strip() #if title_tag else f"第{i-12278418}章"
+        print(raw_title)
+        cleaned_title =raw_title
+        """     clean_filename=raw_title
+        # 加强版文件名清理
+        def clean_filename(title):
+            # 替换常见非法字符
+            title = title.replace('\n', '').replace('\r', '').strip()
+            # 只保留允许的字符
+            valid_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
+            cleaned = ''.join(c for c in title if c in valid_chars)
+            # 确保不为空
+            return cleaned or f"第{i-12278418}章"
+        """
+        #是否有下一页
+        response_2=requests.get(url2,headers=headers)
+        # 确保目录存在
+        os.makedirs(target_directory, exist_ok=True)
+
         #获取正文内容
         content_div=soup.find("div",id='content')
         if content_div:
             #清理文本内容
             text_content = content_div.get_text()
-            cleaned_content ='\n'.join(line.strip() for line in text_content.split('\n') if line.strip())
+            # 优化后的处理逻辑
+            cleaned_content = '\n'.join(
+                ('　　' + line.strip() if i == 0 else line.strip())  # 仅首行缩进
+                for i, line in enumerate(
+                    text_content.replace('\r', '').split('\n\n')  # 按段落分割
+                ) if line.strip()
+            )
 
             #保存为单独文件
-            filename=f"许仙志/{chapter_title}.txt"
-            with open(filename,encoding='utf-8') as f:
+            filename = os.path.join(target_directory, f"{cleaned_title}.txt")
+            with open(filename,encoding='utf-8',mode='w') as f:
                 f.write(cleaned_content)
             
-            print("小说保存完成")
+            if  response_2:
+                soup_2= BeautifulSoup(response_2.text,'lxml')
+                houxu=soup_2.find("div",id='content').get_text()
+                houxu = '\n'.join(
+                ('　　' + line.strip() if i == 0 else line.strip())  # 仅首行缩进
+                for i, line in enumerate(
+                    text_content.replace('\r', '').split('\n\n')  # 按段落分割
+                ) if line.strip()
+            )
+
+
+                with open(filename,encoding='utf-8',mode='a') as f:
+                    f.write(houxu)   
+            else:         
+                print(f"小说{cleaned_title}保存完成")
         else:
             print("未完成")
+        
+        time.sleep(interval)
     except Exception as e:
-        print(f"处理{url}发生错误：{e}")
+        tqdm.write((f"处理{url}发生错误：{e}"))
+        continue
+        
 
 
 
