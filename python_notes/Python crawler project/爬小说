@@ -2,6 +2,72 @@ import requests
 from bs4 import BeautifulSoup
 import lxml
 import chardet
+import time
+import random
+import os
+import json
+from fake_useragent import UserAgent
+
+#初始化配置
+class Config:
+    BASE_URL = "https://www.22biqu.com/bique1346"
+    START_ID =12278419
+    END_ID = 12278430 
+    OUTPUT_DIR = "许仙志"
+    PROGRESS_FILE = os.path.join(OUTPUT_DIR,"progress.json")
+    MIN_DELAY = 1
+    MAX_DELAY = 3
+    RETRY_TIMES = 3
+
+
+
+#创建输出目录
+os.makedirs(Config.OUTPUR_DIR,exist_ok=True)
+
+class NovelSpider:
+    def __init__(self):
+        self.ua =UserAgent()
+        self.session = requests.Session()
+        self.load_progress()
+    
+    def get_random_headers(self):
+        return{
+            'User-Agent':self.ua.random,
+            'Accept':'text/html,appliction/xhtml+xml,application/xml;q=0.9,*/*;q==0.8',
+            'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+            'Referer': f'{Config.BASE_URL}/',
+            'DNT': '1',  # 禁止追踪
+        }
+    
+    def load_progress(self):
+        try:
+            with open(Config.PROGRESS_FILE,'r') as f:
+                self.progress = json.load(f)
+            print(f"加载进度：已下载{len(self.progress['completed'])}"章)
+
+        except:
+            self.progress = {
+                'last_id': Config.START_ID - 1,
+                'completed': [],
+                'failed': []
+            }
+    
+    def save_progress(self):
+        with open(Config.PROGRESS_FILE,'w') as f:
+            json.dump(self.progress,f,indent=2)
+    
+    def get_page(self,url):
+        for _ in range(Config.RETRY_TIMES):
+            try:
+                resonse = self.session.get(
+                    url,
+                    headers=self.get_random_headers(),
+                    timeout=10,
+                    
+                )
+
+
+
 """
     https://www.22biqu.com/biqu13446/12278420.html
     https://www.22biqu.com/biqu13446/14723358.html
