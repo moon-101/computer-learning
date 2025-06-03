@@ -11,81 +11,94 @@
 * 存储数据：将提取的数据存储到数据库、CSV文件、JSON文件等格式中、以便后续使用或分析。
 
 ***
-## 三、爬虫的工具
+## 三、爬虫的工具以及如何使用爬虫
 *工欲善其事，必先利其器*
-1、request + beautifulsoup4  运用
+### 3.1 request + beautifulsoup4  运用
 
 request库 负责请求网站响应
 beautifulsoup4 负责解析网站内容
 
-### 3.1 beautifulsoup4
-1、安装bs4  
+#### 3.1.1 beautifulsoup4
+##### 1、bs4的介绍
+BeautifulSoup 用于解析 HTML 或 XML 数据，并提供了一些方法来导航、搜索和修改解析树。
+
+##### 2、安装bs4  
 方法：pip安装
 
     pip install beautifulsoup4
     pip install lxml#推荐使用lxml作为解析器（速度更快）
-2、基本用法
-BeautifulSoup 用于解析 HTML 或 XML 数据，并提供了一些方法来导航、搜索和修改解析树。
+
+##### 3、基本用法
 BeautifulSoup 常见的操作包括查找标签、获取标签属性、提取文本等。
-要使用 BeautifulSoup，需要先导入 BeautifulSoup，并将 HTML 页面加载到 BeautifulSoup 对象中。
+使用 BeautifulSoup，需要先导入 BeautifulSoup，并将 HTML 页面加载到 BeautifulSoup 对象中。
 通常，你会先用爬虫库（如 requests）获取网页内容:
     
+     import requests
+     from BeautifulSoup import bs4
+     import lxml
+
      python
      #模拟随机网络请求头
+     *如果不使用模拟随机网络请求头，容易致使ip封禁，网站请求失效*
 
-      #确认需要爬取的网站网址
-      url=""
+     #确认需要爬取的网站网址
+     url=""
 
-     #发送网站请求，（已下载）
+     #发送网站请求
      response = requests.get(url)
 
      #确认编码格式
+     *编码一般是"utf-8",如果乱码，则需要检测一下网站编码格式
      response.encoding="utf-8"
+
 
      #解析内容
      soup=Beautitulsoup(response.text,"lxml")
 
      #提取内容
-     neirong= soup.find('',id='')
+     content= soup.find('',id='')
 
-     #处理内容
-     clean_content=
+     """处理内容
+     这个处理十分复杂，我们分类讨论
+     对于文本，使用get_text()函数处理
+
+     clean_content=content.get_text()
 
      #存储内容
      with open('file name','moshi') as f:
         f.write(soup,w),encoding=''utf-8'）
 
-     ```
+     
 大体结构如上
 #由于各种原因会不断细化这四个环节。比如代码重构，模块化处理，模拟网络请求头，反爬虫机制、测试重写等等。但是，主体结构就是这四个。
-实际上操作会有各种各样的问题
+实际上操作会有各种各样的问题如：
+* 遭遇到403情况，模拟网络请求头
+* 乱码问题，确认编码
+* 快速大量请求，被ip屏蔽，随机访问延迟
+* 创建目录文件，提取标题和正文，循环递增创建文件
+* 等等
 
+ ##### 4、实例分析
 
-
+下面我们以爬取小说《许仙志》实例具体讲解
 存储内容
-
-*遭遇到403情况，模拟网络请求头
-*乱码问题，确认编码
-*快速大量请求，被ip屏蔽，随机访问延迟
-*创建目录文件，提取标题和正文，循环递增创建文件
-## 四、具体爬虫方法
-### 1、beautifulsoup4 +request 
-*初级爬虫方法*
+ 
+*初级爬虫方法，requests+bs4爬取网站信息*
 
     #引入第三方库
     import requests
     from bs4 import BeautifulSoup
-    import lxml
-    import chardet
-    import time
-    import random
-    import os
-    import json
-    from fake_useragent import UserAgent
-    from tqdm import tqdm
+    import lxml #lxml,便于快速解析
+    import chardet #自动检测编码格式
+    import time #时间
+    import random #随机
+    import os #文件创建
+    import json 
+    from fake_useragent import UserAgent #随机网络请求头
+    from tqdm import tqdm  #下载可视化体现
     import string
 
-    #1、模拟请求头
+    #模拟请求头
     headers = {
         'User-Agent': UserAgent().random,  # 每次请求生成随机UA
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -96,19 +109,21 @@ BeautifulSoup 常见的操作包括查找标签、获取标签属性、提取文
         'DNT': '1'  # 禁止追踪
     }
 
-    #创建基准目录
+    #创建基准目录，预设存储文件路径，简化循环递进
     base_directory = r'D:\games\computer-learning\爬取的小说'
     if not os.path.exists(base_directory):
         os.makedirs(base_directory)
 
 
-    #目标目录
+    #目标目录，
     target_directory=os.path.join(base_directory,'许仙志')
     if not os.path.exists(target_directory):
         os.makedirs(target_directory)
         print(f"{target_directory}已创建")
     else:
         print("已存在")
+    
+    #确定最小、最大时间间隔
     min_interval=1
     max_interval=5
 
@@ -119,40 +134,46 @@ BeautifulSoup 常见的操作包括查找标签、获取标签属性、提取文
                 ncols=100,
                 dynamic_ncols=True):
 
-        #测试异常
+        #测试异常，防止异常后，程序直接卡死
         try:
             url=f"https://www.22biqu.com/biqu13446/{i}.html"
+            #由于要爬取的内容，有时部分存在在下一页中
             url2=f"https://www.22biqu.com/biqu13446/{i}_2.html"
 
             #请求网站，获取原始内容
             response=requests.get(url,headers=headers)
             
-
+            #检查HTTP请求的响应状态码
             response.raise_for_status()
             
             #自动检察编码
             det= chardet.detect(response.content)
-            actual_encoding=det['encoding']
-            print(f"编码：{actual_encoding}")
+
 
             #使用正确编码解码
-            response.encoding = actual_encoding
+            response.encoding = det
             html_content = response.text
 
             #解析内容
             soup=BeautifulSoup(html_content,'lxml')
-
-
             
-            #确定好随机访问时间间隔
+            #添加随机访问时间间隔
             interval= random.uniform(min_interval,max_interval)
 
             #获取章节标题
             title_tag = soup.find("h1",class_='title')
-            raw_title = title_tag.get_text().strip() #if title_tag else f"第{i-12278418}章"
-            print(raw_title)
+
+            #这而用了一大堆简写语法，
+            raw_title = title_tag.get_text().strip() 
+            if title_tag ：
+                print(raw_title)
+            else ：
+                raw_title=f"第{i-12278418}章"
+
             cleaned_title =raw_title
+
             """     clean_filename=raw_title
+
             # 加强版文件名清理
             def clean_filename(title):
                 # 替换常见非法字符
@@ -175,9 +196,10 @@ BeautifulSoup 常见的操作包括查找标签、获取标签属性、提取文
             if content_div:
                 #清理文本内容
                 text_content = content_div.get_text()
+
                 # 优化后的处理逻辑
                 cleaned_content = '\n'.join(
-                    ('　　' + line.strip() if i == 0 else line.strip())  # 仅首行缩进
+                    ('　　' + line.strip() if i == 0 else line.strip())  # 仅每段段落首行缩进2字符
                     for i, line in enumerate(
                         text_content.replace('\r', '').split('\n\n')  # 按段落分割
                     ) if line.strip()
@@ -206,14 +228,15 @@ BeautifulSoup 常见的操作包括查找标签、获取标签属性、提取文
             else:
                 print("未完成")
             
+            #随机时间暂停
             time.sleep(interval)
+
         except Exception as e:
             tqdm.write((f"处理{url}发生错误：{e}"))
             continue
             、、、
-1、确认爬取网站地址
+### 3.2 Scapy 运用
 
-、模拟
 
 
 
