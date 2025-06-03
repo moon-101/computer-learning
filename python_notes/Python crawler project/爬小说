@@ -151,7 +151,12 @@ class NovelSpider:
 url="https://www.22biqu.com/biqu13446/12278419.html"
 
 """
+
+
+
+
 # 初始化随机用户代理生成器
+
 headers = {
     'User-Agent': UserAgent().random,  # 每次请求生成随机UA
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -178,6 +183,7 @@ else:
 min_interval=1
 max_interval=5
 
+#可视化处理
 for i in tqdm(range(12278419, 12278429), 
              desc="正在爬取小说", 
              unit="章",
@@ -188,6 +194,7 @@ for i in tqdm(range(12278419, 12278429),
     try:
         url=f"https://www.22biqu.com/biqu13446/{i}.html"
         url2=f"https://www.22biqu.com/biqu13446/{i}_2.html"
+
         #请求网站，获取原始内容
         response=requests.get(url,headers=headers)
         
@@ -234,16 +241,32 @@ for i in tqdm(range(12278419, 12278429),
 
         #获取正文内容
         content_div=soup.find("div",id='content')
+        
         if content_div:
             #清理文本内容
-            text_content = content_div.get_text()
+            paragraphs = content_div.find_all('p')
             # 优化后的处理逻辑
-            cleaned_content = '\n'.join(
-                ('　　' + line.strip() if i == 0 else line.strip())  # 仅首行缩进
-                for i, line in enumerate(
-                    text_content.replace('\r', '').split('\n\n')  # 按段落分割
-                ) if line.strip()
-            )
+        
+            # 创建空列表存储处理后的段落
+            processed_paragraphs = []
+
+            # 步骤4: 遍历所有段落
+            for para in paragraphs:
+                # 移除段落首尾的空白字符（但保留段内格式）
+                stripped_para = para.get_text().strip()
+
+                # 跳过空段落（避免处理空白行）
+                if not stripped_para:
+                    continue
+                
+                # 步骤5: 为每个非空段落添加首行缩进
+                
+                indented_para = '　　' + stripped_para
+                
+                processed_paragraphs.append(indented_para)
+
+            # 步骤6: 用单换行符合并所有段落（符合中文排版规范）
+            cleaned_content = '\n'.join(processed_paragraphs)
 
             #保存为单独文件
             filename = os.path.join(target_directory, f"{cleaned_title}.txt")
@@ -252,13 +275,33 @@ for i in tqdm(range(12278419, 12278429),
             
             if  response_2:
                 soup_2= BeautifulSoup(response_2.text,'lxml')
-                houxu=soup_2.find("div",id='content').get_text()
-                houxu = '\n'.join(
-                ('　　' + line.strip() if i == 0 else line.strip())  # 仅首行缩进
-                for i, line in enumerate(
-                    text_content.replace('\r', '').split('\n\n')  # 按段落分割
-                ) if line.strip()
-            )
+                houxu=soup_2.find("div",id='content')
+
+                if houxu:
+                    #找到<P>标签
+                    paragraphs2 = houxu.find_all('p')
+                    
+                
+                    # 创建空列表存储处理后的段落
+                    processed_paragraphs2 = []
+
+                    # 遍历所有段落
+                    for para2 in paragraphs2:
+                        # 移除段落首尾的空白字符（但保留段内格式）
+                        stripped_para2 = para2.get_text().strip()
+
+                        # 跳过空段落（避免处理空白行）
+                        if not stripped_para2:
+                            continue
+                        
+                        # 步骤5: 为每个非空段落添加首行缩进
+                        
+                        indented_para2 = '　　' + stripped_para2
+                        
+                        processed_paragraphs2.append(indented_para2)
+
+                    # 步骤6: 用单换行符合并所有段落（符合中文排版规范）
+                    houxu = '\n'.join(processed_paragraphs2)
 
 
                 with open(filename,encoding='utf-8',mode='a') as f:
@@ -273,6 +316,3 @@ for i in tqdm(range(12278419, 12278429),
         tqdm.write((f"处理{url}发生错误：{e}"))
         continue
         
-
-
-

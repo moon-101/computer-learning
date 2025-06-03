@@ -1,0 +1,12 @@
+{
+  // 通用文本文件配置
+  "[plaintext]": {
+    "editor.wordWrap": "bounded",  // 启用有界自动换行
+    "editor.wordWrapColumn": 60,   // 每行最多60英文字符宽度（约30汉字）
+    "editor.rulers": [60]          // 显示垂直参考线
+  },
+  
+  // 中文文本扩展配置（可选）
+  "files.autoGuessEncoding": true, // 自动检测文件编码
+  "editor.unicodeHighlight.ambiguousCharacters": false // 关闭全角空格警告
+}
