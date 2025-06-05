@@ -250,7 +250,7 @@ for i in tqdm(range(12278419, 12278429),
             # 创建空列表存储处理后的段落
             processed_paragraphs = []
 
-            #  遍历所有段落
+            # 步骤4: 遍历所有段落
             for para in paragraphs:
                 # 移除段落首尾的空白字符（但保留段内格式）
                 stripped_para = para.get_text().strip()
@@ -259,13 +259,13 @@ for i in tqdm(range(12278419, 12278429),
                 if not stripped_para:
                     continue
                 
-                # 为每个非空段落添加首行缩进
+                # 步骤5: 为每个非空段落添加首行缩进
                 
                 indented_para = '　　' + stripped_para
                 
                 processed_paragraphs.append(indented_para)
 
-            # 用单换行符合并所有段落（符合中文排版规范）
+            # 步骤6: 用单换行符合并所有段落（符合中文排版规范）
             cleaned_content = '\n'.join(processed_paragraphs)
 
             #保存为单独文件
@@ -294,13 +294,13 @@ for i in tqdm(range(12278419, 12278429),
                         if not stripped_para2:
                             continue
                         
-                        # 为每个非空段落添加首行缩进
+                        # 步骤5: 为每个非空段落添加首行缩进
                         
                         indented_para2 = '　　' + stripped_para2
                         
                         processed_paragraphs2.append(indented_para2)
 
-                    #  用单换行符合并所有段落（符合中文排版规范）
+                    # 步骤6: 用单换行符合并所有段落（符合中文排版规范）
                     houxu = '\n'.join(processed_paragraphs2)
 
 
