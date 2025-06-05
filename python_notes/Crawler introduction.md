@@ -195,15 +195,29 @@ BeautifulSoup 常见的操作包括查找标签、获取标签属性、提取文
             content_div=soup.find("div",id='content')
             if content_div:
                 #清理文本内容
-                text_content = content_div.get_text()
-
+                paragraphs = content_div.find_all('p')
                 # 优化后的处理逻辑
-                cleaned_content = '\n'.join(
-                    ('　　' + line.strip() if i == 0 else line.strip())  # 仅每段段落首行缩进2字符
-                    for i, line in enumerate(
-                        text_content.replace('\r', '').split('\n\n')  # 按段落分割
-                    ) if line.strip()
-                )
+            
+                # 创建空列表存储处理后的段落
+                processed_paragraphs = []
+
+                # 遍历所有段落
+                for para in paragraphs:
+                    # 移除段落首尾的空白字符（但保留段内格式）
+                    stripped_para = para.get_text().strip()
+
+                    # 跳过空段落（避免处理空白行）
+                    if not stripped_para:
+                        continue
+                    
+                    #  为每个非空段落添加首行缩进
+                    
+                    indented_para = '　　' + stripped_para
+                    
+                    processed_paragraphs.append(indented_para)
+
+                # 用单换行符合并所有段落（符合中文排版规范）
+                cleaned_content = '\n'.join(processed_paragraphs)
 
                 #保存为单独文件
                 filename = os.path.join(target_directory, f"{cleaned_title}.txt")
@@ -213,16 +227,14 @@ BeautifulSoup 常见的操作包括查找标签、获取标签属性、提取文
                 if  response_2:
                     soup_2= BeautifulSoup(response_2.text,'lxml')
                     houxu=soup_2.find("div",id='content').get_text()
-                    houxu = '\n'.join(
-                    ('　　' + line.strip() if i == 0 else line.strip())  # 仅首行缩进
-                    for i, line in enumerate(
-                        text_content.replace('\r', '').split('\n\n')  # 按段落分割
-                    ) if line.strip()
-                )
-
-
+                    para_2= houxu.find_all('p')
+                    paragraphs_2=[]
+                    for line in para_2=[]
+                        line=line.strip()
+                        paragraphs_2.append(line)
+                    cleaned_content_2='/n' .join(paragraphs_2)
                     with open(filename,encoding='utf-8',mode='a') as f:
-                        f.write(houxu)   
+                        f.write(cleaned_content_2)   
                 else:         
                     print(f"小说{cleaned_title}保存完成")
             else:
