@@ -259,13 +259,13 @@ for i in tqdm(range(12278419, 12278429),
                 if not stripped_para:
                     continue
                 
-                # 步骤5: 为每个非空段落添加首行缩进
+                # 为每个非空段落添加首行缩进
                 
                 indented_para = '　　' + stripped_para
                 
                 processed_paragraphs.append(indented_para)
 
-            # 步骤6: 用单换行符合并所有段落（符合中文排版规范）
+            # 用单换行符合并所有段落（符合中文排版规范）
             cleaned_content = '\n'.join(processed_paragraphs)
 
             #保存为单独文件
