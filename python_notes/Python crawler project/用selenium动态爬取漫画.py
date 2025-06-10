@@ -2,11 +2,11 @@
 """因为这是动态内容，不适合request库爬取、因此我们采用selenum动态爬取"""
 #引入第三方库
 from selenium import webdriver
-from selenium.webdriver.edge.service import service as edge_service #驱动路径
+from selenium.webdriver.edge.service import Service as edge_service #驱动路径
 from bs4 import BeautifulSoup
 import time
 
-service= edge_service()
+service= edge_service(executable_path=r"D:\games\edgedriver_win64\msedgedriver.exe")
 options=webdriver.EdgeOptions()
 driver= webdriver.Edge(service=service,options=options)
 
@@ -26,9 +26,7 @@ print(driver.title)
 
 
 #解析网站内容
-bs = BeautifulSoup(r.text,'lxml')
-print(bs)
-list_con_li = bs.find('ul',class_='list_con_li')
+
 #处理清洗数据
 
 #存储数据
