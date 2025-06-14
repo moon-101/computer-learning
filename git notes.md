@@ -1,15 +1,16 @@
 # git 的介绍
-分布式管理系统
+git是什么？
+git是一个版本分布式管理系统
 # git的使用
-## git的入库
+## git的仓库创建
 
     git init
     
-# git的分支管理
+## git的分支管理
     *最NB的技能*
 
 ## 创建分支
-创建新分支并切换到该分支：
+* 创建新分支并切换到该分支：
 
     git checkout -b <branchname>
 
@@ -17,7 +18,7 @@
 
     git checkout -b feature-xyz
 
-切换分支命令:
+* 切换分支命令:
 
     git checkout (branchname)
 
@@ -273,8 +274,9 @@ Git 分支管理
     M  runoob.php
     $ git commit
     [master 88afe0e] Merge branch 'change_site'
-现在我们成功解决了合并中的冲突，并提交了结果。
-# 分支工作流
+现在我们成功解决了合并中的冲突，并提交了结果。 
+
+## 分支工作流
 Git Flow 是一种常用的分支工作流，分为以下几种分支类型：
 
 主分支（main/master）：存储生产代码。
@@ -282,20 +284,20 @@ Git Flow 是一种常用的分支工作流，分为以下几种分支类型：
 功能分支（feature）：从 develop 分支创建，用于开发新功能。
 发布分支（release）：从 develop 分支创建，用于准备发布。
 热修复分支（hotfix）：从 main 分支创建，用于紧急修复生产问题。
-## 创建功能分支：
+### 创建功能分支：
 
     git checkout develop
     git checkout -b feature/xyz
-## 完成功能开发并合并：
+### 完成功能开发并合并：
 
     git checkout develop
     git merge feature/xyz
     git branch -d feature/xyz
-## 创建发布分支：
+### 创建发布分支：
 
     git checkout develop
     git checkout -b release/1.0.0
-## 发布并合并到主分支和开发分支：
+### 发布并合并到主分支和开发分支：
 
     git checkout main
     git merge release/1.0.0
@@ -303,11 +305,11 @@ Git Flow 是一种常用的分支工作流，分为以下几种分支类型：
     git checkout develop
     git merge release/1.0.0
     git branch -d release/1.0.0
-## 创建热修复分支：
+### 创建热修复分支：
 
     git checkout main
     git checkout -b hotfix/1.0.1
-## 完成修复并合并：
+### 完成修复并合并：
 
     git checkout main
     git merge hotfix/1.0.1
@@ -315,7 +317,7 @@ Git Flow 是一种常用的分支工作流，分为以下几种分支类型：
     git checkout develop
     git merge hotfix/1.0.1
     git branch -d hotfix/1.0.1
-## 实例
+### 实例
 以下是一个综合示例，演示分支创建、切换、合并和删除。
 
 创建和切换分支：
