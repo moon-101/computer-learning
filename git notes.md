@@ -72,8 +72,6 @@ git是一个版本分布式管理系统
 
     git push origin --delete <branchname>
 
-## 实例
-Git 分支管理
 
 ### 列出分支
 列出分支基本命令：
@@ -186,7 +184,7 @@ Git 分支管理
 
     $ git branch
     * master
-### 合并冲突
+#### 合并冲突
 合并并不仅仅是简单的文件添加、移除的操作，Git 也会合并修改。
 
     $ git branch

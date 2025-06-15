@@ -1,8 +1,8 @@
 # Python requests 模块
 *request介绍*
 Python requests 是一个常用的 HTTP 请求库，可以方便地向网站发送 HTTP 请求，并获取响应结果。
-requests 模块比 urllib 模块更简洁。
-
+requests 模块比 urllib 模块更简洁。#按标准该用 urllib
+# requests 使用流程
 使用 requests 发送 HTTP 请求需要先导入 requests 模块：
     import requests
 导入后就可以发送 HTTP 请求，使用 requests 提供的方法向指定 URL 发送 HTTP 请求，例如：
@@ -70,33 +70,29 @@ request(method, url, args)	向指定的 url 发送指定的请求方法
     # 返回网页内容
     print(x.status_code)
 输出结果如下：
-
-200
-设置请求头：
+    200
 
 实例
-# 导入 requests 包
-import requests
+* 导入 requests 包
+    import requests
 
 
-kw = {'s':'python 教程'}
-
-# 设置请求头
+* 设置请求头
 headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36"}
 
-# params 接收一个字典或者字符串的查询参数，字典类型自动转换为url编码，不需要urlencode()
+* params 接收一个字典或者字符串的查询参数，字典类型自动转换为url编码，不需要urlencode()
 response = requests.get("https://www.runoob.com/", params = kw, headers = headers)
 
-# 查看响应状态码
+* 查看响应状态码
 print (response.status_code)
 
-# 查看响应头部字符编码
+* 查看响应头部字符编码
 print (response.encoding)
 
-# 查看完整url地址
+* 查看完整url地址
 print (response.url)
 
-# 查看响应内容，response.text 返回的是Unicode格式的数据
+* 查看响应内容，response.text 返回的是Unicode格式的数据
 print(response.text)
 
 输出结果如下：
@@ -104,8 +100,9 @@ print(response.text)
 200
 UTF-8
 https://www.runoob.com/?s=python+%E6%95%99%E7%A8%8B
-
 ... 其他内容...
+
+
 post() 方法可以发送 POST 请求到指定 url，一般格式如下：
 
 requests.post(url, data={key: value}, json={key: value}, args)
@@ -114,14 +111,14 @@ data 参数为要发送到指定 url 的字典、元组列表、字节或文件�
 json 参数为要发送到指定 url 的 JSON 对象。
 args 为其他参数，比如 cookies、headers、verify等。
 
-实例
-# 导入 requests 包
+# 实例
+* 导入 requests 包
 import requests
 
-# 发送请求
+* 发送请求
 x = requests.post('https://www.runoob.com/try/ajax/demo_post.php')
 
-# 返回网页内容
+* 返回网页内容
 print(x.text)
 输出结果如下：
 
@@ -130,16 +127,16 @@ print(x.text)
 post 请求带参数：
 
 实例
-# 导入 requests 包
+* 导入 requests 包
 import requests
 
-# 表单参数，参数名为 fname 和 lname
+* 表单参数，参数名为 fname 和 lname
 myobj = {'fname': 'RUNOOB','lname': 'Boy'}
 
-# 发送请求
+* 发送请求
 x = requests.post('https://www.runoob.com/try/ajax/demo_post2.php', data = myobj)
 
-# 返回网页内容
+* 返回网页内容
 print(x.text)
 输出结果如下：
 
