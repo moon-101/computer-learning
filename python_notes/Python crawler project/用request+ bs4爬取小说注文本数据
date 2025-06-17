@@ -145,6 +145,7 @@ class NovelSpider:
     https://www.22biqu.com/biqu13446/12278420.html
     https://www.22biqu.com/biqu13446/14723358.html
 """
+class config():
 #为了连续爬取，我要对网址进行递增
 
 """#输入爬取网址

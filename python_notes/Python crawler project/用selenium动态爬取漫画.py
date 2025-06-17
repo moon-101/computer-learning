@@ -86,7 +86,6 @@ for chapter_number in range(154500,154502):
         if img_elements:
             for i ,img in enumerate(img_elements):
                 img_url = img.get_attribute('src')
-
                 # 下载图片
                 img_ = requests.get(img_url)
                 filename = os.path.join(target_directory, f"{i}.jpg")

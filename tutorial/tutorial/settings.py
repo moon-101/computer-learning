@@ -1,4 +1,4 @@
-# Scrapy settings for runoob_test_spiders project
+# Scrapy settings for tutorial project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -7,14 +7,14 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = "runoob_test_spiders"
+BOT_NAME = "tutorial"
 
-SPIDER_MODULES = ["runoob_test_spiders.spiders"]
-NEWSPIDER_MODULE = "runoob_test_spiders.spiders"
+SPIDER_MODULES = ["tutorial.spiders"]
+NEWSPIDER_MODULE = "tutorial.spiders"
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = "runoob_test_spiders (+http://www.yourdomain.com)"
+#USER_AGENT = "tutorial (+http://www.yourdomain.com)"
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
@@ -45,13 +45,13 @@ ROBOTSTXT_OBEY = False
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 #SPIDER_MIDDLEWARES = {
-#    "runoob_test_spiders.middlewares.RunoobTestSpidersSpiderMiddleware": 543,
+#    "tutorial.middlewares.TutorialSpiderMiddleware": 543,
 #}
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #DOWNLOADER_MIDDLEWARES = {
-#    "runoob_test_spiders.middlewares.RunoobTestSpidersDownloaderMiddleware": 543,
+#    "tutorial.middlewares.TutorialDownloaderMiddleware": 543,
 #}
 
 # Enable or disable extensions
@@ -63,7 +63,7 @@ ROBOTSTXT_OBEY = False
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 #ITEM_PIPELINES = {
-#    "runoob_test_spiders.pipelines.RunoobTestSpidersPipeline": 300,
+#    "tutorial.pipelines.TutorialPipeline": 300,
 #}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -91,5 +91,3 @@ ROBOTSTXT_OBEY = False
 REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
-DOWNLOAD_DELAY = 1 
-USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3' 
