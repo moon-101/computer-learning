@@ -21,7 +21,6 @@ for page in range(0,100,20):
     params = {
         'start':page,
         'limit':20,
-
     }
 
     try:
