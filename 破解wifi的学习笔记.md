@@ -2,6 +2,7 @@
 * 1、暴力破解：用大量常用初始WiFi密码字典，一个一个去尝试，直至破解成功。
 评价：操作简单，但是只能处理一些“初级原始”的wifi，密码如果被人为更改后，就很难破解了。
 * 2、用 Airodump-ng 和 Aircrack-ng/Hashcat 破解 WPA/WPA2 Wi-Fi 路由器。
+* 注：即使现在最新的wpa3安全协议依然可以通过某种技术被破解
 
 # 2、破解WiFi具体工作流程介绍
 
@@ -22,5 +23,6 @@ sudo apt-get install aircrack-ng
 - 捕获4次握手
 - 破解网络密码
 相关链接："https://github.com/brannondorsey/wifi-cracking"
+
 
 
