@@ -2,30 +2,72 @@ import requests
 from bs4 import BeautifulSoup
 import os 
 import lxml
+import csv
+import time
+import random
 
-tarlg_cd=os.path.join(r'D:\games\computer-learning\python_notes\Python crawler project\用requests爬取豆瓣top250\电影名单')
-#导入配置
+from tqdm import tqdm
+
+
+
+#导入配置信息
+#基准网站网址
+tarlg_url = 'https://movie.douban.com/top250'
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36',
-    'Referer': 'https://movie.douban.com/'
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+    'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+    'Referer': 'https://movie.douban.com/',
+    'Cookie' :'viewed="1199659"; _pk_id.100001.4cf6=6c220611223cf274.1727621388.; douban-fav-remind=1; __yadk_uid=D9vhB6VaYEHqCp4vx357yxHXjHJtObA2; _pk_ref.100001.4cf6=%5B%22%22%2C%22%22%2C1741393700%2C%22https%3A%2F%2Fwww.douban.com%2Fsearch%3Fq%3D%E5%93%AA%E5%90%92%22%5D; ll="118287"; bid=Zn46BLKDGOo; ap_v=0,6.0; dbsawcv1=MTc1MDIzNDEwMkA0ZmJhMDM4MDI5NTA1OWI3NThlMjU1OGVlMGJkOGU1M2M2YmNmN2I5MGE0YTU1MDMyODVhZWQzZWMwNzAwOTFiQDQ1YzJmYzZmNjlmY2Q5MzZANzBmM2MwMjEwNThm; dbcl2="250617263:H8tl5JNovOo"; ck=8Hrj; frodotk_db="f84cc3ba35c58d62e8e64b2ea150a826"; push_noty_num=0; push_doumail_num=0'
 }
-for i in range(0,250,25):
-    url=f'https://movie.douban.com/top250?start={i}&filter='
+links=[]
+try:
+    for i in range(0,250,25):
+        url=f'https://movie.douban.com/top250?start={i}&filter='
 
-    #发送网络请求
-    response=requests.get(url,headers=headers)
-    response.raise_for_status()
+        #发送网络请求
+        response=requests.get(url,headers=headers)
+        response.raise_for_status()
 
-    #解析返回内容
-    soup= BeautifulSoup(response.text,'lxml')
-    #筛选相关内容
-    movie_list=soup.find_all("span",class_='title')
+        #解析返回内容
+        soup= BeautifulSoup(response.text,'lxml')
+        #筛选相关内容
+        for link in soup.select('div.hd a'):
+            if 'href' in link.attrs:
+                links.append(link['href'])
+except:
+    print("1")
 
-    #存储数据    清洗数据
-    with open("movie_top250.txt",'a',encoding='utf-8') as f:
-        for  movie in movie_list:
-            movie=movie.text.strip()
-            if movie.isalpha():
-                continue
-            f.write(movie+'\n')
+
+title_list=[]
+try:
+    for link in links:
+        response_1=requests.get(link,headers=headers)
+
+        soup_1=BeautifulSoup(response_1.text,'lxml')
+
+        #内容
+        title=soup_1.find('span', {'property': 'v:itemreviewed'})
+        
+        if title:
+            title_list.append(title.text.strip())
+        
+        # 增加随机延迟
+        time.sleep(random.uniform(1, 2))
+except:
+    print("2")
+
+#存储数据    清洗数据
+with open("movie_top250.csv",'w',encoding='utf-8',newline='') as f:
+    f_names=['name']
+    csv_dict_writer=csv.DictWriter(f,fieldnames=f_names)
+    #写入表头
+    csv_dict_writer.writeheader()
+
+    #写入数据
+    for  movie in tqdm(title_list):
+        csv_dict_writer.writerow({'name':movie})
+
+
+
 
