@@ -1,3 +1,4 @@
+#引入第三方库
 import requests
 from bs4 import BeautifulSoup
 import os 
@@ -5,14 +6,13 @@ import lxml
 import csv
 import time
 import random
-
 from tqdm import tqdm
 
 
 
 #导入配置信息
 #基准网站网址
-tarlg_url = 'https://movie.douban.com/top250'
+target_url = 'https://movie.douban.com/top250'
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
@@ -20,9 +20,12 @@ headers = {
     'Referer': 'https://movie.douban.com/',
     'Cookie' :'viewed="1199659"; _pk_id.100001.4cf6=6c220611223cf274.1727621388.; douban-fav-remind=1; __yadk_uid=D9vhB6VaYEHqCp4vx357yxHXjHJtObA2; _pk_ref.100001.4cf6=%5B%22%22%2C%22%22%2C1741393700%2C%22https%3A%2F%2Fwww.douban.com%2Fsearch%3Fq%3D%E5%93%AA%E5%90%92%22%5D; ll="118287"; bid=Zn46BLKDGOo; ap_v=0,6.0; dbsawcv1=MTc1MDIzNDEwMkA0ZmJhMDM4MDI5NTA1OWI3NThlMjU1OGVlMGJkOGU1M2M2YmNmN2I5MGE0YTU1MDMyODVhZWQzZWMwNzAwOTFiQDQ1YzJmYzZmNjlmY2Q5MzZANzBmM2MwMjEwNThm; dbcl2="250617263:H8tl5JNovOo"; ck=8Hrj; frodotk_db="f84cc3ba35c58d62e8e64b2ea150a826"; push_noty_num=0; push_doumail_num=0'
 }
+
+#收集所有豆瓣top250电影的网址，
+#创建目标空集
 links=[]
 try:
-    for i in range(0,250,25):
+    for i in range(0,1,3):
         url=f'https://movie.douban.com/top250?start={i}&filter='
 
         #发送网络请求
@@ -38,36 +41,74 @@ try:
 except:
     print("1")
 
-
+#
+#创建收集电影数据的标签列表
 title_list=[]
+docter_list=[]
+country_list=[]
+release_time_list=[]
+jianjie_list=[]
 try:
     for link in links:
         response_1=requests.get(link,headers=headers)
 
         soup_1=BeautifulSoup(response_1.text,'lxml')
 
-        #内容
+        #内容有标题、国家、导演、时间、简介
         title=soup_1.find('span', {'property': 'v:itemreviewed'})
+        #导演
+        docter=soup_1.find('span',class_='attrs')
+        docter=soup_1.find('a',{'rel':'v:directedBy'})
+
+        #国家
+        country_span=soup_1.find('span',class_='pl',string='制片国家/地区:')
+        print(country_span)
+
+        country = country_span.next_sibling.strip() 
+        print(country)
         
+        #时间
+
+        release_time=soup_1.find('span',{'property': 'v:initialReleaseDate'})
+        release_time =release_time['content']
+
+
+        #简介
+        jianjie=soup_1.find('span',{'property':'v:summary'})
+
+
         if title:
             title_list.append(title.text.strip())
-        
+        docter_list.append(docter.text.strip() if docter else '未知')
+        country_list.append(country.strip() if country else '未知')
+        release_time_list.append(release_time)
+        jianjie_list.append(jianjie.text.strip() if jianjie else '无简介')
+        # 打印获取到的信息
+        print(f"标题: {title.text.strip() if title else '未知'}")
         # 增加随机延迟
         time.sleep(random.uniform(1, 2))
-except:
-    print("2")
+except requests.RequestException as e:
+    print(f"请求电影详情失败: {e}")
 
 #存储数据    清洗数据
 with open("movie_top250.csv",'w',encoding='utf-8',newline='') as f:
-    f_names=['name']
+    f_names=['name','导演','国家','上映时间','简介']
+    
     csv_dict_writer=csv.DictWriter(f,fieldnames=f_names)
+
     #写入表头
     csv_dict_writer.writeheader()
 
     #写入数据
-    for  movie in tqdm(title_list):
-        csv_dict_writer.writerow({'name':movie})
-
+    for  movie,docter,country,release_time,jianjie in tqdm(zip(title_list,docter_list,country_list,release_time_list,jianjie_list)):
+        csv_dict_writer.writerow({
+            'name':movie,
+            '导演': docter,
+            '国家': country,
+            '上映时间': release_time,
+            '简介': jianjie
+        })
+          
 
 
 
