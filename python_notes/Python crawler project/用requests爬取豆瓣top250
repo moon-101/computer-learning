@@ -1,18 +1,21 @@
 #引入第三方库
-import requests
-from bs4 import BeautifulSoup
-import os 
-import lxml
-import csv
-import time
-import random
-from tqdm import tqdm
-
-
+import requests #发送html的网络请求
+from bs4 import BeautifulSoup #解析筛选响应的内容
+import os #与操作系统交互
+import lxml #解析速度更快
+import csv #csv文件库
+import time#时间库
+import random#随机库
+from tqdm import tqdm#循环可视化
+#目标文件路径
+target_file_path = r'd:\games\computer_learning\python_notes\Python crawler project\豆瓣top250'
+if not os.path.exists(target_file_path):
+    os.makedirs(target_file_path)
 
 #导入配置信息
-#基准网站网址
-target_url = 'https://movie.douban.com/top250'
+
+
+#编辑请求头文件
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
@@ -22,93 +25,100 @@ headers = {
 }
 
 #收集所有豆瓣top250电影的网址，
-#创建目标空集
-links=[]
-try:
-    for i in range(0,1,3):
-        url=f'https://movie.douban.com/top250?start={i}&filter='
 
-        #发送网络请求
-        response=requests.get(url,headers=headers)
-        response.raise_for_status()
+#创建收集top250电影网站网址的空集
+def fetch_movie_links(url,headers):
+    links=[]
+    try:
+        for i in range(0,250,25):
+            page_url=f'{url}?start={i}&filter='
 
-        #解析返回内容
-        soup= BeautifulSoup(response.text,'lxml')
-        #筛选相关内容
-        for link in soup.select('div.hd a'):
-            if 'href' in link.attrs:
-                links.append(link['href'])
-except:
-    print("1")
+            #发送网络请求
+            response=requests.get(page_url,headers=headers)
+            #返回状态码
+            response.raise_for_status()
 
-#
-#创建收集电影数据的标签列表
-title_list=[]
-docter_list=[]
-country_list=[]
-release_time_list=[]
-jianjie_list=[]
-try:
-    for link in links:
-        response_1=requests.get(link,headers=headers)
+            #解析返回内容
+            soup= BeautifulSoup(response.text,'lxml')
+            #筛选相关内容
+            #使用CSS选择器选择所有电影链接
+            #soup.select()方法可以使用CSS选择器来选择元素
+            for link in soup.select('div.hd a'):
+                if 'href' in link.attrs:
+                    links.append(link['href'])
+    except requests.RequestException as e:
+        print(f"收集网址失败,{e}")
+    return links
 
-        soup_1=BeautifulSoup(response_1.text,'lxml')
+#获取电影信息
+def fetch _movie_details(link,headers)
+    #异常处理
+    try:
+        response=requests.get(link,headers=headers)
+        #变量名可以改一下
+        movie_soup=BeautifulSoup(response.text,'lxml')
 
-        #内容有标题、国家、导演、时间、简介
-        title=soup_1.find('span', {'property': 'v:itemreviewed'})
+        #内容有标题、国家、导演、时间、简介#在使用bs4筛选元素，我懂得不多，标签加css
+        title=movie_soup.find('span', {'property': 'v:itemreviewed'})
         #导演
-        docter=soup_1.find('span',class_='attrs')
-        docter=soup_1.find('a',{'rel':'v:directedBy'})
+        director=movie_soup.find('a',rel='v:directedBy')
 
         #国家
-        country_span=soup_1.find('span',class_='pl',string='制片国家/地区:')
-        print(country_span)
-
-        country = country_span.next_sibling.strip() 
-        print(country)
+        country_span=movie_soup.find('span',class_='pl',string='制片国家/地区:')
+        country = country_span.next_sibling.strip() if release_time_span else '未知'
         
         #时间
-
-        release_time=soup_1.find('span',{'property': 'v:initialReleaseDate'})
-        release_time =release_time['content']
-
+        release_time_span=movie_soup.find('span',{'property': 'v:initialReleaseDate'})
+        release_time =release_time['content'] if release_time else '未知'
 
         #简介
-        jianjie=soup_1.find('span',{'property':'v:summary'})
+        summary_span=movie_soup.find('span',{'property':'v:summary'})
+        summary = summary_span.text.strip() if summary_span else None
 
-
-        if title:
-            title_list.append(title.text.strip())
-        docter_list.append(docter.text.strip() if docter else '未知')
-        country_list.append(country.strip() if country else '未知')
-        release_time_list.append(release_time)
-        jianjie_list.append(jianjie.text.strip() if jianjie else '无简介')
-        # 打印获取到的信息
-        print(f"标题: {title.text.strip() if title else '未知'}")
-        # 增加随机延迟
-        time.sleep(random.uniform(1, 2))
-except requests.RequestException as e:
-    print(f"请求电影详情失败: {e}")
-
-#存储数据    清洗数据
-with open("movie_top250.csv",'w',encoding='utf-8',newline='') as f:
-    f_names=['name','导演','国家','上映时间','简介']
-    
-    csv_dict_writer=csv.DictWriter(f,fieldnames=f_names)
-
-    #写入表头
-    csv_dict_writer.writeheader()
-
-    #写入数据
-    for  movie,docter,country,release_time,jianjie in tqdm(zip(title_list,docter_list,country_list,release_time_list,jianjie_list)):
-        csv_dict_writer.writerow({
-            'name':movie,
-            '导演': docter,
-            '国家': country,
+        #创建字典存储电影信息
+        return {
+            'name': title.text.strip() if title else '未知',
+            '导演': director.text.strip() if director else '未知',
+            '国家': country
             '上映时间': release_time,
-            '简介': jianjie
-        })
-          
+            '简介': summary
+        }
+        
 
 
+    except requests.RequestException as e:
+        print(f"请求电影详情失败:{link},错误信息： {e}")
+        return None
 
+def save_movies_to_csv(movies,file_path):
+    #存储数据：创建csv文件
+    #    清洗数据
+    with open("movie_top250.csv",'w',encoding='utf-8',newline='') as f:
+        f_names=['name','导演','国家','上映时间','简介']
+        csv_dict_writer=csv.DictWriter(f,fieldnames=f_names)
+
+        #写入表头
+        csv_dict_writer.writeheader()
+
+        #写入数据
+        for  movie in tqdm(movies):
+            if movie:
+                csv_dict_writer.writerow(movie)
+
+#主函数
+def main():
+    url = 'https://movie.douban.com/top250'
+    file_path=os.path.join(target_file_path,'movie_top250.csv')
+    links= fetch_movie_links(url,headers)
+    movies=[]
+    for link in links:
+        movie = fetch_movie_details(link,headers)
+        if movie:
+            movies.append(movie)
+            print(f"标题：{movie['name']}, 导演：{movie['导演']}, 国家：{movie['国家']}, 上映时间：{movie['上映时间']}, 简介：{movie['简介']}")
+            time.sleep(random.uniform(1, 2))  # 增加随机延迟
+    #保存数据到csv文件
+    save_movies_to_csv(movies, file_path)
+
+if __name__ == '__main__':
+    main()
