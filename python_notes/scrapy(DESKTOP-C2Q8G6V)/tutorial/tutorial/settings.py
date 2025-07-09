@@ -11,6 +11,9 @@ BOT_NAME = "tutorial"
 
 SPIDER_MODULES = ["tutorial.spiders"]
 NEWSPIDER_MODULE = "tutorial.spiders"
+ITEM_PIPELINES = {
+    'tutorial.pipelines.SaveToFilePipeline': 300,
+}
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
@@ -91,3 +94,10 @@ ROBOTSTXT_OBEY = False
 REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
+
+DEFAULT_REQUEST_HEADERS = {
+    'User-Agent': USER_AGENT,
+    'Accept-Language': 'zh-CN,zh;q=0.9',
+    'Referer': 'https://www.d21d965.top/',
+}

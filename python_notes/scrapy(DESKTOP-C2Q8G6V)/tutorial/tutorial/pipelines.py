@@ -5,9 +5,13 @@
 
 
 # useful for handling different item types with a single interface
-from itemadapter import ItemAdapter
+import os
 
-
-class TutorialPipeline:
+class SaveToFilePipeline:
     def process_item(self, item, spider):
+        # 确保 'downloads' 目录存在
+        os.makedirs('downloads', exist_ok=True)
+        filename = item['filename']
+        with open(os.path.join('downloads', filename), 'w', encoding='utf-8') as f:
+            f.write(item['content'])
         return item
