@@ -27,7 +27,18 @@ git是一个版本分布式管理系统
 
 当你切换分支的时候，Git 会用该分支的最后提交的快照替换你的工作目录的内容， 所以多个分支不需要多个目录。#什么意思，我没看懂
 
-与远程仓库进行绑定
+
+### 远程仓库
+
+git remote 命令
+    git remote 列出当前仓库中配置的远程仓库
+    git remote -v 查看所有绑定的远程仓库，并显示它们的url
+    git remote add <remote_name> <remote_url>绑定一个远程仓库
+    git remote rename <old_name> <new_name> 重命名远程仓库
+    git remote remove <remote_name>
+    git remote set-url <remote_name> <new_url> 修改
+    git remote show <remote_name> 展示远程仓库信息，含有url和跟踪分支
+    
 
 
 ### 查看分支
