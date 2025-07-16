@@ -77,12 +77,15 @@ scrapy shell 'https://quotes.toscrape.com/page/1/'
 这一步是重难点。
 
 css选择器格式写法
-    对于class： css.
-    对于id：css#
-    对于属性：a attr::href
+    对于class： css(标签.class)
+    对于id：css（标签#id）
+    对于属性：css(a attr::href)
 
-    response.css(div.)
+    response.css(div#id.class.class1 a attr::href)
+    
 re表达式
+
+xpath表达式
 
 
 
