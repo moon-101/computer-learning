@@ -26,7 +26,7 @@ headers = {
 
 #收集所有豆瓣top250电影的网址，
 
-#创建收集top250电影网站网址的空集
+#创建收集top250电影网站网址的集合的函数
 def fetch_movie_links(url,headers):
     links=[]
     try:
