@@ -8,7 +8,12 @@
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
 BOT_NAME = "JD"
-
+DOWNLOAD_DELAY=3
+#启用随机User—Agent中间件
+DOWNLOADER_MIDDLEWARES={    
+    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
+    'scrapy_user_agents.middlewares.RandomUserAgentMiddleware': 400,
+}
 SPIDER_MODULES = ["JD.spiders"]
 NEWSPIDER_MODULE = "JD.spiders"
 
@@ -19,7 +24,7 @@ ADDONS = {}
 #USER_AGENT = "JD (+http://www.yourdomain.com)"
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
 # Concurrency and throttling settings
 #CONCURRENT_REQUESTS = 16

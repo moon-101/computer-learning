@@ -15,34 +15,34 @@ headers = {
     'Referer': 'https://movie.douban.com/'
 }
 
-
-#抓取前100个评论
-for page in range(0,100,20):
-    params = {
-        'start':page,
-        'limit':20,
-    }
-
-    try:
-        response = requests.get(url, headers=headers, params=params, timeout=10)
-        response.raise_for_status()  #状态码 检查请求状态
-
+def main(url,headers):
+        #抓取前100个评论
+    for page in range(0,100,20):
+        params = {
+            'start':page,
+            'limit':20,
+        }
+        try:
+            response = requests.get(url, headers=headers, params=params, timeout=10)
+            response.raise_for_status()  #状态码 检查请求状态
 
 
-        #解析数据
-        soup = BeautifulSoup(response.text, 'lxml')
 
-        comments = soup.find_all('p', class_='comment-content')
+            #解析数据
+            soup = BeautifulSoup(response.text, 'lxml')
 
-        with open('comments1.txt', 'a', encoding='utf-8') as f:
-            for comment in tqdm(comments):
-                content = comment.text.strip()
-                f.write(content + '\n')
+            comments = soup.find_all('p', class_='comment-content')
 
-                #保存数据
-                sleep(random.uniform(1, 4))  # 随机延时
+            with open('comments1.txt', 'a', encoding='utf-8') as f:
+                for comment in tqdm(comments):
+                    content = comment.text.strip()
+                    f.write(content + '\n')
 
-    except Exception as e:
-        print(f'请求失败：{str(e)}')
-        break
+                    #保存数据
+                    sleep(random.uniform(1, 4))  # 随机延时
 
+        except Exception as e:
+            print(f'请求失败：{str(e)}')
+            break
+if __name__ =='__main__':
+    main(url,headers)

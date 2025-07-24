@@ -3,28 +3,35 @@ from scrapy import Request
 from bs4 import BeautifulSoup
 import re
 from ..items import SmartcranehubItem
-import dateime
+import datetime
 import lxml
 
 class JD_productSpider(scrapy.Spider):
     name='Jd_product'
     allowed_domains=['search.jd.com']
     max_page=100
-    start_urls=['https://search.jd.com/Search?keyword=%E6%95%B0%E7%A0%81&enc=utf-8&wq=%E6%95%B0%E7%A0%81&pvid=34b0fcf7ed434840a74c057bc97be346']
+    start_urls=['https://search.jd.com/Search?keyword=%E9%9B%B6%E9%A3%9F&enc=utf-8&qrst=1&rt=1&stop=1&vt=2&wq=lingshi&stock=1&click=0&page=1']
 
     def parse(self,response):
         content =response.body
-        soup =BeautifulSoup(soup,'lxml')
+        soup =BeautifulSoup(content,'lxml')
         brand_temp_list =soup.find_all('li',attrs={'id':re.compile(r'brand-(\w+)')})
         brand_list=list()
-
+        if 'risk_handler' in response.url:
+            self.logger.warning("触发京东反爬机制！请检查爬虫配置")
+        return  # 放弃当前请求
         for item in brand_temp_list:
             brand_title= item.find('a')["title"]
-            brand_list.append(re.sub("[A-za-z0-9\!\%\[\]\,\.\(\)\(\)\"\.\'\]","",brand_title))
+            brand_list.append(re.sub(r"[A-za-z0-9\!\%\[\]\,\.\(\)\(\)\"\.\'\]","",brand_title))
             # brand_list= li
             goods_temp_list=soup.find_all('li',attrs={'class':'gl-item'})
             for item in goods_temp_list:
                 goods=SmartcranehubItem()
+                #零食 id
+                goods_id=item['data-pid']
+                #零食 prcie
+                goods_price=item.find_all('div',attrs={'class':'p-price'})
+
 
                 #零食 tilte
                 goods_temp_title=item.find_all('div',attrs={'class':'p-name'})
@@ -32,10 +39,10 @@ class JD_productSpider(scrapy.Spider):
 
                 #零食 img
                 goods_temp_img=item.find_all('div',class_='p-img')
-                goods_img='http:'+goods_temp_img[0].find('img')['source-data-lazy-img']
+                goods_img='http:'+goods_temp_img[0].find('img')['source-data-lazy-img']['src']
 
                 #零食 url
-                goods_temp_url=item.find('div',class_='p-img').find('a',attrs={'targer':'blank'})['href']
+                goods_temp_url=item.find('div',class_='p-img').find('a',attrs={'target':'blank'})['href']
                 goods_url=goods_temp_url if 'http' in goods_temp_url else 'https:'+goods_temp_url
 
                 #零食 price
@@ -57,18 +64,17 @@ class JD_productSpider(scrapy.Spider):
                 goods['goods_img']=goods_img
                 goods['goods_price']=goods_price
                 goods['goods_shop']=goods_shop
-                goods['goods_icon']=goods_icon
                 goods['goods_time']=goods_time
                 goods['goods_brand']=goods_brand
                 goods['goods_describe']=goods_describe
                 yield goods
 
-        cur_page_num=int(response.url.split('&page='))[1]
+        cur_page_num=int(response.url.split('&page=')[1])
         next_page_num=cur_page_num+1
         if cur_page_num<self.max_page:
             next_url=response.url[:-len(str(cur_page_num))]+str(next_page_num)
             yield Request(url=next_url,callback=self.parse,dont_filter=True)
-            
+
 
             
         def getGoodBrand(self,goods_title,brand_list):
@@ -76,5 +82,6 @@ class JD_productSpider(scrapy.Spider):
                 if brand in goods_title:
                     return brand
             return 'No-brand'
+
 
 
