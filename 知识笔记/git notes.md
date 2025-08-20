@@ -288,71 +288,80 @@ git remote 命令
 现在我们成功解决了合并中的冲突，并提交了结果。 
 
 ## 分支工作流
-Git Flow 是一种常用的分支工作流，分为以下几种分支类型：
 
+Git Flow 是一种常用的分支工作流，分为以下几种分支类型：
+1. 开发软件工作流
 主分支（main/master）：存储生产代码。
 开发分支（develop）：存储即将发布的代码。
 功能分支（feature）：从 develop 分支创建，用于开发新功能。
 发布分支（release）：从 develop 分支创建，用于准备发布。
 热修复分支（hotfix）：从 main 分支创建，用于紧急修复生产问题。
-### 创建功能分支：
+    1. 创建功能分支：
 
-    git checkout develop
-    git checkout -b feature/xyz
-### 完成功能开发并合并：
+        git checkout develop
+        git checkout -b feature/xyz
+    2. 完成功能开发并合并：
 
-    git checkout develop
-    git merge feature/xyz
-    git branch -d feature/xyz
-### 创建发布分支：
+        git checkout develop
+        git merge feature/xyz
+        git branch -d feature/xyz
+    3. 创建发布分支：
 
-    git checkout develop
-    git checkout -b release/1.0.0
-### 发布并合并到主分支和开发分支：
+        git checkout develop
+        git checkout -b release/1.0.0
+    4.  发布并合并到主分支和开发分支：
 
-    git checkout main
-    git merge release/1.0.0
-    git tag -a 1.0.0 -m "Release 1.0.0"
-    git checkout develop
-    git merge release/1.0.0
-    git branch -d release/1.0.0
-### 创建热修复分支：
+        git checkout main
+        git merge release/1.0.0
+        git tag -a 1.0.0 -m "Release 1.0.0"
+        git checkout develop
+        git merge release/1.0.0
+        git branch -d release/1.0.0
+    5. 创建热修复分支：
 
-    git checkout main
-    git checkout -b hotfix/1.0.1
-### 完成修复并合并：
+        git checkout main
+        git checkout -b hotfix/1.0.1
+    6.  完成修复并合并：
 
-    git checkout main
-    git merge hotfix/1.0.1
-    git tag -a 1.0.1 -m "Hotfix 1.0.1"
-    git checkout develop
-    git merge hotfix/1.0.1
-    git branch -d hotfix/1.0.1
-### 实例
-以下是一个综合示例，演示分支创建、切换、合并和删除。
+        git checkout main
+        git merge hotfix/1.0.1
+        git tag -a 1.0.1 -m "Hotfix 1.0.1"
+        git checkout develop
+        git merge hotfix/1.0.1
+        git branch -d hotfix/1.0.1
+    7.  实例
+    以下是一个综合示例，演示分支创建、切换、合并和删除。
 
-创建和切换分支：
+    创建和切换分支：
 
-    git checkout -b feature-abc
+        git checkout -b feature-abc
+        
+    开发并提交更改：
+
+    编辑文件并提交
+        git add .
+        git commit -m "Develop feature ABC"
+
+    合并到主分支：
+
+        git checkout main
+        git merge feature-abc
+    删除本地分支：
+
+        git branch -d feature-abc
+
+2. 个人学习git流
+main 主分支
+
+    2.1 学习记录保存
+        git add '学习内容的文件名'
+        git commit -m '写好备注，比如这次保存的主要内容主题是什么'
+        git push "远程分支名"
+    2.2 为修改知识框架
+
     
-开发并提交更改：
-
-编辑文件并提交
-    git add .
-    git commit -m "Develop feature ABC"
-
-合并到主分支：
-
-    git checkout main
-    git merge feature-abc
-删除本地分支：
-
-    git branch -d feature-abc
-
-  
-### 个人工作git流
-
-## 关于git使用，我所遇到过的问题记录
+## 关于git使用，我所遇到过的问题和心得记录
 * 将文件推送到github失败
 Q1：网络问题：GitHub不支持国内网络访问 A:1、要想推送成功，要么挂梯子，要么挂加速器
 Q2:github推送设置问题：GitHub关于推送文件有相关设置。A:将报错发给ai，根据ai给的步骤走。
+* 慎用#号分段，否则你会得到依托答辩
