@@ -9,7 +9,7 @@ url=r"https://newssearch.chinadaily.com.cn/en/search?cond=%7B%22publishedDateFro
 
 response=requests.get(url)
 soup=BeautifulSoup(response.text,'lxml')
-result=soup.find('span',{'class':'insto'}).find_all('a',{'attr':'href'})
+result=soup.find('span',{'class':'insto'}).find_all('a',{'href':True})
 url_all=[tag['href'] for tag in result]
 
 class QuotesSpider(scrapy.Spider):#爬虫名称
