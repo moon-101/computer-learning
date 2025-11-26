@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""
 # 示例：使用 Selenium 抓取京东商品（教学/示例用途，仅用于学习，遵守 robots.txt 与服务条款）
 # 依赖: selenium, webdriver-manager, pandas
 
