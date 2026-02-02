@@ -15,14 +15,13 @@
 
 ## 三、“爬虫的工具”有关爬虫的第三方库的介绍
 *工欲善其事，必先利其器*
-实现爬取数据中，我们常常要用到许多第三方库如requests、beautifulsoup库，还有selenium库,还会用到应用框架crapy
+实现爬取数据中，我们常常要用到许多第三方库如requests、beautifulsoup库，还有selenium库,还会用到应用框架scrapy
 以及存储数据的Mysql等。在收集数据之后，我们一般还要进行数据分析、数据可视化等工作。我发现，在编程中，对第三方库运用是很重要的一部分
 
 1. requsets 的介绍
 requests是python的第三方库，主要用来负责发送网络请求工作。
 需要进行额外安装工作，简单的pip 安装即可
     pip install requests
-
 常用用法为get()方法
     requests.get(url,headers=headers)
 
@@ -30,11 +29,8 @@ requests是python的第三方库，主要用来负责发送网络请求工作。
 总之最为常用的方法为get()方法
 
 
-
 2. beautifulsoup4
-
 主要负责：解析返回的数据
-
 1、安装bs4  
 方法：pip安装
 
@@ -70,16 +66,12 @@ BeautifulSoup 常见的操作包括查找标签、获取标签属性、提取文
      #存储内容
      with open('file name','moshi') as f:
         f.write(soup,w),encoding=''utf-8'）
-
-     ```
 大体结构如上
 #由于各种原因会不断细化这四个环节。比如代码重构，模块化处理，模拟网络请求头，反爬虫机制、测试重写等等。但是，主体结构就是这四个。
 当然实际上操作会有各种各样的问题
 
 3. selenium
 自动测试化工具
-
-
 *遭遇到403情况，模拟网络请求头
 *乱码问题，确认编码
 *快速大量请求，被ip屏蔽，随机访问延迟
