@@ -1,15 +1,34 @@
-import request
-from bs4 import BeatifulSoup
+import requests
+from bs4 import BeautifulSoup
 import os
 import time
 from Selenium import webdirver
 
 
 
-# 1.打开京东网页
-url=
+# 1.打开京东网页,确认爬取的网页地址
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+    "Cookie": "shshshfpa=9ea5381d-d01f-9bd0-48d6-942f9de45476-1748935719; shshshfpx=9ea5381d-d01f-9bd0-48d6-942f9de45476-1748935719; o2State={%22webp%22:true%2C%22avif%22:true}; pinId=Wcl3F4TPmpI_zvnGdsh8Hw; pin=%E6%9D%8E%E6%80%9D%E4%BF%AD079; unick=ny37yah8tp22ur; unpl=JF8EALFnNSttXhwDUR4KSxIYSwlXWw4IH0cHbmEFV11cTgMAHFccQRN7XlVdWhRKFR9uZRRXXlNIVA4aASsSEXteU11bD00VB2xXXAQDGhUQR09SWEBJJVpRXlkATRICaGQNZG1bS2QFGjIbFBVCVVZaWwhMEwNqYgVdXlFOUgMeMhoiF3ttZFxfCE0TC19mNVVtGh8IBxoBGRpdS1tRV1UKTxEDaGMFUVhYQlcMHgQdFyBKbVc; __jdu=1748935716514418284774; __jdv=229668127|haosou-search|t_262767352_haosousearch|cpc|64159740629_0_7ffe49a191e24b1ea50712154f46d6b2|1772547663000; wlfstk_smdl=e9lyonr57s3v7y29a2gtf7wgtdh67fpl; TrackID=1PNL0hOeyQhcLSCdecKxCPJlT0SwDCE6IIZyO_9oglOK4U1eHLggTYkWOT6B4BmcbJh2i3iT7M-MOcpthGk1ulF51voUw9XXQbAiT1fVKUMSLe-sZQzHBa-gmVnPjW0Vl; thor=D129E2D82BC390F2C4863A696C65C8064C244F7E21C921D04B3D5E746AE8B40BD47D6ACD2539B1B1F4CBB1D5ADFAE407C6F621A5D5775A641030D86EEDC739A1F57556FBB96B9968B136D20EA42C49ED68C7CD8B09CDE7D8F628F5F2C491A5A19339608B9DF98F775CBD67CEF5B99F480A31677BCC8475AC1F341D7620DD3C0A; light_key=AASBKE7rOxgWQziEhC_QY6ya81XOXWOCCI0XXQVkGbXMNsSgcogwLhh-S7iuktb7XRIqVeeY; ceshi3.com=000; _tp=S6p6ZaiJM%2B5ppC9h%2FJtTXTOXzHCZ8gQGN%2FGc5efcCn0%3D; _pst=%E6%9D%8E%E6%80%9D%E4%BF%AD079; 3AB9D23F7A4B3C9B=KROUSDN7JWIVSGUQ3LB6T3BKUEEDMEMBT6WMZM2J2YVBY56KAMOYD7TCFPOG4SFRXKS3MMI6EY66PXYL2GGBG3BCJY; __jda=76161171.1748935716514418284774.1748935716.1763553699.1772547656.17; __jdc=76161171; flash=3_HH4IA4WrHk9E4dTR4YQhWXzHVr0DhTyaUItcCKy7poSi-tsUJBmYVVevQYbZCvBhueM_1M6X4DohTRAOaPwdcF5ls2fLP800ZI105YiSASxjEsa1iwpSuF07iMtj_Es00lxZ6nou1eQD2QwpfKJpMJqhULFukpozNUIkdJ1F8h9--LMb; mail_times=4%2C1%2C1772548289440; areaId=19; ipLoc-djd=19-1607-0-0; cn=16; UseCorpPin=%E6%9D%8E%E6%80%9D%E4%BF%AD079; umc_count=1; 3AB9D23F7A4B3CSS=jdd03KROUSDN7JWIVSGUQ3LB6T3BKUEEDMEMBT6WMZM2J2YVBY56KAMOYD7TCFPOG4SFRXKS3MMI6EY66PXYL2GGBG3BCJYAAAAM4WQQND7AAAAAACNXBPLOHMMVDEEX; _gia_d=1; __jdb=76161171.25.1748935716514418284774|17.1772547656; sdtoken=AAbEsBpEIOVjqTAKCQtvQu17zviMj-H-_-5I2upzmHAAxSAUkIDNshyTSvisIWi3Vw3IrIqNM2WmzJgFQ2w1HB0BSGhmmMqDsNWwPWd3GJfCAq12cCWmutC-fm6HFJASXgu3WHfXlXQ8ie2BX-s; shshshfpb=BApXWUCEpt_lAU5YNIlh1ZPof_VgmIuWsBgrSUDZh9xJ1LJl-K8OPtl-zqW7fZcMrI_ABkuSihocXAa1En60J7MO_PQDSnAmTRLHTc2wbQU6wt6E1VGskSQc",  # 模拟登录状态
+    "Referer": "https://www.jd.com/",
+    "Accept-Language": "zh-CN,zh;q=0.9",
+    "Accept-Encoding": "gzip, deflate, br"
+}
+url="https://item.jd.com/10137231558679.html?spmTag=YTAyMTkuYjAwMjM1Ni5jMDAwMDQ2ODkuMyUyM2hpc2tleXdvcmQlMkNhMDI0MC5iMDAyNDkzLmMwMDAwNDAyNy4xJTIzc2t1X2NhcmQ"
 
 
+try:
+    time.sleep(2)  # 控制请求频率，避免被封
+    response = requests.get(url, headers=headers, timeout=15)
+    response.raise_for_status()
+    response.encoding = "utf-8"
+    
+    soup = BeautifulSoup(response.text, "html.parser")
+    title = soup.find("title").text
+    print("商品标题：", title)
+    
+except Exception as e:
+    print("请求失败：", e)
 
 #2.确认收集的元素,创建收集的字典,以及存储数据的文件
 #3.收集数据
